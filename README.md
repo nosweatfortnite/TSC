@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>The Target Submission</title>
+    <title>The Target – Embed Submission</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,7 +18,7 @@
             background-color: #2b2b2b;
             padding: 20px;
             border-radius: 8px;
-            width: 350px;
+            width: 360px;
         }
 
         h2 {
@@ -93,22 +93,35 @@
         e.preventDefault();
 
         const form = e.target;
+        const imageFile = form.image.files[0];
+
+        const embed = {
+            title: "🎯 The Target",
+            color: 0xff0000,
+            fields: [
+                { name: "Roleplay Name", value: form.roleplayName.value, inline: true },
+                { name: "Roblox Username", value: form.robloxUsername.value, inline: true },
+                { name: "Occupation", value: form.occupation.value, inline: true },
+                { name: "Vehicle", value: form.vehicle.value, inline: true },
+                { name: "Registration", value: form.registration.value, inline: true },
+                { name: "Reason", value: form.reason.value, inline: false }
+            ],
+            image: {
+                url: "attachment://target-image.png"
+            },
+            footer: {
+                text: "Target Submission System"
+            },
+            timestamp: new Date().toISOString()
+        };
+
+        const payload = {
+            embeds: [embed]
+        };
+
         const formData = new FormData();
-
-        const content =
-`**🎯 The Target**
-**Roleplay Name:** ${form.roleplayName.value}
-**Roblox Username:** ${form.robloxUsername.value}
-**Occupation:** ${form.occupation.value}
-**Vehicle:** ${form.vehicle.value}
-**Registration:** ${form.registration.value}
-**Reason:** ${form.reason.value}`;
-
-        formData.append("content", content);
-
-        if (form.image.files.length > 0) {
-            formData.append("files[0]", form.image.files[0]);
-        }
+        formData.append("payload_json", JSON.stringify(payload));
+        formData.append("files[0]", imageFile, "target-image.png");
 
         try {
             const response = await fetch(webhookURL, {
@@ -117,14 +130,14 @@
             });
 
             if (response.ok) {
-                alert("Submission sent successfully!");
+                alert("Embed sent successfully!");
                 form.reset();
             } else {
-                alert("Failed to send submission.");
+                alert("Failed to send embed.");
             }
         } catch (error) {
-            alert("Error sending submission.");
             console.error(error);
+            alert("Error sending embed.");
         }
     });
 </script>
